@@ -1,0 +1,33 @@
+---
+title: "R Notebook"
+output:
+  html_document:
+    df_print: paged
+---
+```{r packages required}
+library(gsheet)
+library(tidyverse)
+```
+
+
+You can find the latest metagame update [here](https://drive.google.com/drive/folders/1jU-slPNt9XNzl2grGUarZTXh5afTsNvy). You will need to load in the last update of the last complete folder and the last update of the currently active folder. This code currently used version 4 as previous and version 5 as current
+
+```{r load in the data}
+previous<-read.csv(text=gsheet2text("https://docs.google.com/spreadsheets/d/1nCAUo64HZn3OR-6vxDEnl6vOaCtSusEW/edit#gid=1077913484", format='csv'),stringsAsFactors = F)
+previous<-as.data.frame(previous)%>%select(1:4)
+previous<-previous%>%janitor::row_to_names(row_number=1)
+previous<-previous%>%mutate_at(vars(c("App.","Wins")),function(x) as.numeric(as.character(x)))
+
+current<-as.data.frame(gsheet2tbl("https://docs.google.com/spreadsheets/d/1kGWzbETwXzJ2YRjFkRZj3kNfHlmFbtiL/edit#gid=805013681"))
+current<-current%>%dplyr::rename_all(list(~make.names(.)))%>%select(c("Deck","App.","Wins"))
+
+metagame<-merge(previous,current,by=c("Deck"))
+metagame<-metagame%>%mutate(app=App..x+App..y,
+                  wins=Wins.x+Wins.y,
+                  winrate=wins/app,
+              dwinrate=Wins.y/App..y-Wins.x/App..x)%>%
+  select(c("Deck","app","wins","winrate","dwinrate"))
+metagame
+```
+
+The final metagame file contains the appearances wins, win rates and changes in win rates from the cumulative data to the current set. 
