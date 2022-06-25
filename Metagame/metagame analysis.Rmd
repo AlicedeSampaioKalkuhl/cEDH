@@ -12,7 +12,7 @@ library(tidyverse)
 
 You can find the latest metagame update [here](https://drive.google.com/drive/folders/1jU-slPNt9XNzl2grGUarZTXh5afTsNvy). You will need to load in the last update of the last complete folder and the last update of the currently active folder. This code currently used version 4 as previous and version 5 as current
 
-```{r load in the data}
+```{r load in the deck data}
 previous<-read.csv(text=gsheet2text("https://docs.google.com/spreadsheets/d/1nCAUo64HZn3OR-6vxDEnl6vOaCtSusEW/edit#gid=1077913484", format='csv'),stringsAsFactors = F)
 previous<-as.data.frame(previous)%>%select(1:4)
 previous<-previous%>%janitor::row_to_names(row_number=1)
@@ -31,3 +31,24 @@ metagame
 ```
 
 The final metagame file contains the appearances wins, win rates and changes in win rates from the cumulative data to the current set. 
+
+If you want more details, you have to load the data from the clean additions for each update, because the layout of each update's game data just doesn't mix with R. So far, there are no clean additions for update 4.6 or earlier. There is raw data before that, if you feel like getting a picture with more data but some of it is missing altogether and submit it as a commit to this repository. 
+
+```{r load additional data}
+update_4.7<-as.data.frame(read.csv(text=gsheet2text("https://docs.google.com/spreadsheets/d/1kGWzbETwXzJ2YRjFkRZj3kNfHlmFbtiL/edit#gid=1741543419",format="csv"),stringsAsFactors = F)) %>%select(1:6)
+update_5.1<-as.data.frame(read.csv(text=gsheet2text("https://docs.google.com/spreadsheets/d/1YCiktmGNAb3_qdqnvYV1pEUagLPnRSDS/edit#gid=442422242"),format="csv",stringsAsFactors=F))%>%select(1:6)
+update_5.2<-as.data.frame(read.csv(text=gsheet2text("https://docs.google.com/spreadsheets/d/12PAVZLEDabYJj58IVsIZozyM2FS_tAtA/edit#gid=1046860729"),format="csv",stringsAsFactors=F))%>%select(1:6)
+update_5.3<-as.data.frame(read.csv(text=gsheet2text("https://docs.google.com/spreadsheets/d/1Fra5STRL6fFtjS2KAbycGkVd8VZOJXd_/edit#gid=877970647"),format="csv",stringsAsFactors=F))%>%select(1:6)
+update_5.4<-as.data.frame(read.csv(text=gsheet2text("https://docs.google.com/spreadsheets/d/1kGWzbETwXzJ2YRjFkRZj3kNfHlmFbtiL/edit#gid=1741543419",format="csv"),stringsAsFactors=F))%>%select(1:6)
+
+
+
+detail%>%setNames(c("player1","player2","player3","player4","winner","turn"))
+
+detail<-detail%>%
+  mutate(turn=gsub("Turn ", "", turn))%>%mutate(turn=as.numeric(as.factor(turn)))%>%
+  mutate(winner=gsub("Player ", "", winner))%>%mutate(winner=as.numeric(as.factor(winner)))
+
+
+```
+
