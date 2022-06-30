@@ -52,3 +52,6 @@ detail<-detail%>%
 
 ```
 
+# Colours!
+One thing I do with my own MTG stats 
+
